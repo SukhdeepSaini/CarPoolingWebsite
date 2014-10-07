@@ -1,0 +1,207 @@
+HTML {
+	MIN-HEIGHT: 100%; HEIGHT: auto! important
+}
+BODY {
+	MIN-HEIGHT: 100%; HEIGHT: auto! important
+}
+DIV {
+	FONT-FAMILY: "Trebuchet MS", tahoma, arial, serif
+}
+TD {
+	FONT-FAMILY: "Trebuchet MS", tahoma, arial, serif
+}
+#TB_window {
+	FONT: 12px Arial, Helvetica, sans-serif; COLOR: #333333
+}
+#TB_secondLine {
+	FONT: 10px Arial, Helvetica, sans-serif; COLOR: #666666
+}
+#TB_window A:link {
+	COLOR: #336699; TEXT-DECORATION: none
+}
+#TB_window A:visited {
+	COLOR: #336699; TEXT-DECORATION: none
+}
+#TB_window A:hover {
+	COLOR: #3399ff; TEXT-DECORATION: underline
+}
+#TB_window A:active {
+	COLOR: #3399ff; TEXT-DECORATION: underline
+}
+#TB_window A:focus {
+	COLOR: #336699; TEXT-DECORATION: none
+}
+#TB_overlay {
+	Z-INDEX: 100; LEFT: 0px; POSITION: absolute; TOP: 0px; BACKGROUND-COLOR: #000
+}
+#TB_window {
+	BORDER-RIGHT: #525252 4px solid; BORDER-TOP: #525252 4px solid; Z-INDEX: 102; BACKGROUND: #ffffff; BORDER-LEFT: #525252 4px solid; COLOR: #000000; BORDER-BOTTOM: #525252 4px solid; POSITION: absolute; TEXT-ALIGN: left
+}
+#TB_window IMG {
+	
+}
+#TB_caption {
+	PADDING-RIGHT: 30px; PADDING-LEFT: 25px; FLOAT: left; PADDING-BOTTOM: 10px; PADDING-TOP: 7px; HEIGHT: 25px
+}
+#TB_closeWindow {
+	PADDING-RIGHT: 25px; PADDING-LEFT: 0px; FLOAT: right; PADDING-BOTTOM: 10px; PADDING-TOP: 11px; HEIGHT: 25px
+}
+#TB_closeAjaxWindow {
+	PADDING-RIGHT: 10px; PADDING-LEFT: 0px; FLOAT: right; MARGIN-BOTTOM: 1px; PADDING-BOTTOM: 7px; PADDING-TOP: 5px; TEXT-ALIGN: right
+}
+#TB_ajaxWindowTitle {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 10px; FLOAT: left; MARGIN-BOTTOM: 1px; PADDING-BOTTOM: 5px; PADDING-TOP: 7px
+}
+#TB_title {
+	FONT-WEIGHT: bold; FONT-SIZE: 9pt; BORDER-BOTTOM: #bbbbbb 1px solid; FONT-FAMILY: tahoma, arial, serif; HEIGHT: 27px; BACKGROUND-COLOR: #e8e8e8
+}
+#TB_ajaxContent {
+	CLEAR: both; PADDING-RIGHT: 15px; PADDING-LEFT: 15px; PADDING-BOTTOM: 15px; OVERFLOW: auto; LINE-HEIGHT: 1.4em; PADDING-TOP: 2px; TEXT-ALIGN: left
+}
+#TB_ajaxContent P {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 5px; PADDING-TOP: 5px
+}
+#TB_load {
+	DISPLAY: none; Z-INDEX: 101; WIDTH: 100px; POSITION: absolute; HEIGHT: 100px
+}
+#TB_HideSelect {
+	Z-INDEX: 99; LEFT: 0px; BORDER-TOP-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; POSITION: absolute; TOP: 0px; BACKGROUND-COLOR: #fff; BORDER-BOTTOM-STYLE: none
+}
+#TB_iframeContent {
+	CLEAR: both; MARGIN-TOP: 1px; MARGIN-BOTTOM: -1px; BORDER-TOP-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; BORDER-BOTTOM-STYLE: none
+}
+* HTML #TB_iframeContent {
+	MARGIN-BOTTOM: 1px
+}
+.tip {
+	BORDER-RIGHT: #cccccc 1px solid; PADDING-RIGHT: 8px; BORDER-TOP: #cccccc 1px solid; PADDING-LEFT: 8px; FONT-SIZE: 11px; Z-INDEX: 13000; BACKGROUND: #fffeeb; PADDING-BOTTOM: 8px; BORDER-LEFT: #cccccc 1px solid; WIDTH: 220px; COLOR: #fff; PADDING-TOP: 4px; BORDER-BOTTOM: #cccccc 1px solid; TEXT-ALIGN: left
+}
+.tip-text {
+	DISPLAY: none
+}
+.tip-top {
+	PADDING-RIGHT: 8px; PADDING-LEFT: 8px; FONT-WEIGHT: bold; FONT-SIZE: 11px; PADDING-BOTTOM: 4px; MARGIN: 0px; COLOR: #9fd4ff; PADDING-TOP: 8px
+}
+.tip-bottom {
+	
+}
+.Tips1 {
+	VERTICAL-ALIGN: middle
+}
+DIV.autosuggest {
+	PADDING-RIGHT: 0px; BACKGROUND-POSITION: 50% top; PADDING-LEFT: 0px; FONT-SIZE: 10px; BACKGROUND-IMAGE: url(../images/as_pointer.gif); PADDING-BOTTOM: 0px; PADDING-TOP: 10px; BACKGROUND-REPEAT: no-repeat; FONT-FAMILY: Lucida Grande, Arial, sans-serif; POSITION: absolute
+}
+DIV.autosuggest DIV.as_header {
+	PADDING-RIGHT: 6px; BACKGROUND-POSITION: right top; PADDING-LEFT: 6px; BACKGROUND-IMAGE: url(../images/ul_corner_tr.gif); PADDING-BOTTOM: 0px; OVERFLOW: hidden; PADDING-TOP: 0px; BACKGROUND-REPEAT: no-repeat; POSITION: relative; HEIGHT: 6px
+}
+DIV.autosuggest DIV.as_footer {
+	PADDING-RIGHT: 6px; BACKGROUND-POSITION: right top; PADDING-LEFT: 6px; BACKGROUND-IMAGE: url(../images/ul_corner_tr.gif); PADDING-BOTTOM: 0px; OVERFLOW: hidden; PADDING-TOP: 0px; BACKGROUND-REPEAT: no-repeat; POSITION: relative; HEIGHT: 6px
+}
+DIV.autosuggest DIV.as_footer {
+	BACKGROUND-IMAGE: url(../images/ul_corner_br.gif)
+}
+DIV.autosuggest DIV.as_header DIV.as_corner {
+	BACKGROUND-POSITION: left top; LEFT: 0px; BACKGROUND-IMAGE: url(../images/ul_corner_tl.gif); WIDTH: 6px; BACKGROUND-REPEAT: no-repeat; POSITION: absolute; TOP: 0px; HEIGHT: 6px
+}
+DIV.autosuggest DIV.as_footer DIV.as_corner {
+	BACKGROUND-POSITION: left top; LEFT: 0px; BACKGROUND-IMAGE: url(../images/ul_corner_tl.gif); WIDTH: 6px; BACKGROUND-REPEAT: no-repeat; POSITION: absolute; TOP: 0px; HEIGHT: 6px
+}
+DIV.autosuggest DIV.as_footer DIV.as_corner {
+	BACKGROUND-IMAGE: url(../images/ul_corner_bl.gif)
+}
+DIV.autosuggest DIV.as_header DIV.as_bar {
+	OVERFLOW: hidden; HEIGHT: 6px; BACKGROUND-COLOR: #333
+}
+DIV.autosuggest DIV.as_footer DIV.as_bar {
+	OVERFLOW: hidden; HEIGHT: 6px; BACKGROUND-COLOR: #333
+}
+DIV.autosuggest UL {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px 0px -4px; OVERFLOW: hidden; PADDING-TOP: 0px; LIST-STYLE-TYPE: none; BACKGROUND-COLOR: #333
+}
+DIV.autosuggest UL LI {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px 4px 4px; COLOR: #ccc; PADDING-TOP: 0px; TEXT-ALIGN: left
+}
+DIV.autosuggest UL LI A {
+	PADDING-RIGHT: 0px; DISPLAY: block; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; WIDTH: 100%; COLOR: #ccc; PADDING-TOP: 0px; POSITION: relative; BACKGROUND-COLOR: transparent; TEXT-DECORATION: none; 
+}
+DIV.autosuggest UL LI A:hover {
+	BACKGROUND-COLOR: #444
+}
+DIV.autosuggest UL LI.as_highlight A:hover {
+	BACKGROUND-COLOR: #1b5ccd
+}
+DIV.autosuggest UL LI A SPAN {
+	PADDING-RIGHT: 6px; DISPLAY: block; PADDING-LEFT: 6px; FONT-WEIGHT: bold; PADDING-BOTTOM: 3px; PADDING-TOP: 3px
+}
+DIV.autosuggest UL LI A SPAN SMALL {
+	FONT-WEIGHT: normal; COLOR: #999
+}
+DIV.autosuggest UL LI.as_highlight A SPAN SMALL {
+	COLOR: #ccc
+}
+DIV.autosuggest UL LI.as_highlight A {
+	BACKGROUND-POSITION: right bottom; BACKGROUND-IMAGE: url(../images/hl_corner_br.gif); COLOR: #fff; BACKGROUND-REPEAT: no-repeat; BACKGROUND-COLOR: #1b5ccd
+}
+DIV.autosuggest UL LI.as_highlight A SPAN {
+	BACKGROUND-POSITION: left bottom; BACKGROUND-IMAGE: url(../images/hl_corner_bl.gif); BACKGROUND-REPEAT: no-repeat
+}
+DIV.autosuggest UL LI A .tl {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; WIDTH: 6px; PADDING-TOP: 0px; BACKGROUND-REPEAT: no-repeat; POSITION: absolute; TOP: 0px; HEIGHT: 6px
+}
+DIV.autosuggest UL LI A .tr {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; WIDTH: 6px; PADDING-TOP: 0px; BACKGROUND-REPEAT: no-repeat; POSITION: absolute; TOP: 0px; HEIGHT: 6px
+}
+DIV.autosuggest UL LI A .tr {
+	RIGHT: 0px
+}
+DIV.autosuggest UL LI.as_highlight A .tl {
+	BACKGROUND-POSITION: left bottom; LEFT: 0px; BACKGROUND-IMAGE: url(../images/hl_corner_tl.gif)
+}
+DIV.autosuggest UL LI.as_highlight A .tr {
+	BACKGROUND-POSITION: right bottom; RIGHT: 0px; BACKGROUND-IMAGE: url(../images/hl_corner_tr.gif)
+}
+DIV.autosuggest UL LI.as_warning {
+	FONT-WEIGHT: bold; TEXT-ALIGN: center
+}
+DIV.autosuggest UL EM {
+	COLOR: #6eade7; FONT-STYLE: normal
+}
+DIV.autosuggest IMG {
+	VERTICAL-ALIGN: middle; MARGIN-RIGHT: 5px
+}
+INPUT.fallback_status {
+	PADDING-RIGHT: 3px; PADDING-LEFT: 3px; FONT-WEIGHT: bold; FONT-SIZE: 8pt; BACKGROUND: none transparent scroll repeat 0% 0%; PADDING-BOTTOM: 3px; VERTICAL-ALIGN: middle; COLOR: #333333; BORDER-TOP-STYLE: none; PADDING-TOP: 3px; FONT-FAMILY: verdana, arial, serif; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; HEIGHT: 22px; BORDER-BOTTOM-STYLE: none
+}
+#uploader {
+	BORDER-RIGHT: #cccccc 1px solid; PADDING-RIGHT: 15px; BORDER-TOP: #cccccc 1px solid; PADDING-LEFT: 15px; PADDING-BOTTOM: 10px; BORDER-LEFT: #cccccc 1px solid; WIDTH: 430px; PADDING-TOP: 10px; BORDER-BOTTOM: #cccccc 1px solid; BACKGROUND-COLOR: #ffffff
+}
+#uploader .progress {
+	BACKGROUND: url(../images/uploader_progress.gif) #ffffff no-repeat 50% 0px; MARGIN-RIGHT: 0.5em
+}
+#fileList {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; WIDTH: 420px; PADDING-TOP: 0px; LIST-STYLE-TYPE: none
+}
+#fileList LI.file {
+	BORDER-TOP: #eeeeee 1px solid; MARGIN-TOP: 5px; BACKGROUND: url(../images/uploader_file.png) no-repeat 4px 4px
+}
+#fileList LI.file-uploading.file {
+	BACKGROUND-IMAGE: url(../images/uploader_uploading.png); BACKGROUND-COLOR: #d9dde9
+}
+#fileList LI.file-success.file {
+	BACKGROUND-IMAGE: url(../images/uploader_success.png)
+}
+#fileList LI.file-failed.file {
+	BACKGROUND-IMAGE: url(../images/uploader_failed.png)
+}
+#fileList LI.file .file-name {
+	CLEAR: left; DISPLAY: block; FONT-WEIGHT: bold; FONT-SIZE: 1.2em; MARGIN-LEFT: 44px; LINE-HEIGHT: 40px; HEIGHT: 40px
+}
+#fileList LI.file .file-size {
+	MARGIN-TOP: 2px; FONT-SIZE: 0.9em; FLOAT: right; LINE-HEIGHT: 18px; MARGIN-RIGHT: 6px
+}
+#fileList LI.file .file-info {
+	DISPLAY: block; FONT-SIZE: 0.9em; MARGIN-LEFT: 10px; LINE-HEIGHT: 20px
+}
+#fileList LI.file .file-remove {
+	CLEAR: right; MARGIN-TOP: 4px; FLOAT: right; LINE-HEIGHT: 18px; MARGIN-RIGHT: 6px
+}

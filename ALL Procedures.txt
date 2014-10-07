@@ -1,0 +1,1371 @@
+
+-------------------------------------1-----------------------------------------------------
+--------------------Checks whether the Emp_Id and password is valid or not-----------------
+create PROCEDURE Usp_ValidateUser (@Emp_Id int,@Password VARCHAR(20),@Status int output)
+AS
+BEGIN
+	
+	
+		IF exists(SELECT Emp_Id FROM tbl_Registration WHERE Emp_Id=@Emp_Id AND Password=@Password)
+		BEGIN
+			SELECT @Status=Status FROM tbl_Registration WHERE Emp_Id=@Emp_Id
+			
+			RETURN 1
+		END
+		ELSE
+			set @Status=0
+			RETURN 0
+		
+END
+GO
+
+
+
+
+  
+ declare @a int 
+declare @Status int
+ exec @a=Usp_ValidateUser 402318,'12',@Status output
+ print @a
+ print @Status
+ 
+------------------------------------------------2----------------------------------------------
+-----------------Inserts the details of new user in the database--------------------------------
+
+
+alter procedure usp_RegisterUser(@Emp_Id int ,@Password varchar(20),@ContactNo bigint ,@Email_Id varchar(20),@Status char(2),@Security_Ques varchar(20),@Security_Ans varchar(20))
+as
+begin
+declare @ret int
+declare @reset int
+set @reset=1
+if not exists(select * from tbl_registration where @Emp_Id=Emp_Id)
+begin
+insert into tbl_registration values
+(@Emp_Id,
+ @Password,
+ @ContactNo,
+ @Email_Id ,
+ @Status,
+ @Security_Ques,
+ @Security_Ans,
+ @reset
+ )
+set @ret=1
+end
+else
+begin
+set @ret=0
+end
+return @ret
+end
+
+
+
+---------------------------------------------3----------------------------------------------
+-----------------Inserts the details of Car in the database.--------------------------------
+
+
+alter PROCEDURE usp_RegisterCar
+ (@Car_Registration_Id VARCHAR(20), @Emp_Id int, @Car_Name VARCHAR(20), @Seats int ,@Date_Start_Pool date,@Date_End_Pool date,@Status char(2),@Available_seats int, @Stopage1_Name VARCHAR(20),@Stopage2_Name VARCHAR(20), @Stopage3_Name VARCHAR(20), @Morning_Arrival_Time1 time, @Morning_Arrival_Time2 time,
+  @Morning_Arrival_Time3 time, @Departure_Time time)
+
+	AS
+	BEGIN
+	 
+	declare @check int 
+	
+
+
+	exec @check=usp_CheckPoolValidity  @Car_Registration_Id
+	print @check
+	if (@check=0)
+	begin
+	insert into tbl_Wheels values(@Car_Registration_Id,@Emp_Id ,@Car_Name,@Seats,@Date_Start_Pool,@Date_End_Pool ,@Status,@Available_seats)
+	insert into tbl_Timing values(@Car_Registration_Id,@Stopage1_Name,@Stopage2_Name,@Stopage3_Name,@Morning_Arrival_Time1,@Morning_Arrival_Time2,@Morning_Arrival_Time3,@Status,@Departure_Time,1,GETDATE())
+	insert into tbl_QuickPool values(@Car_Registration_Id,@Emp_Id ,@Car_Name,@Seats,@Date_Start_Pool,@Date_End_Pool,@Available_seats,@Stopage1_Name,@Stopage2_Name,@Stopage3_Name,@Morning_Arrival_Time1,@Morning_Arrival_Time2,@Morning_Arrival_Time3,@Departure_Time,1,GETDATE(),'nostoppage')
+set @status=1
+	end
+	else
+	begin
+	set @status=0
+	end
+	RETURN @status
+end
+
+	
+
+
+ declare @a int 
+  exec @a=usp_RegisterCar 'PBO8-AH-58',402318,'Sumo',8,'1-april-2009','22-APR-2010','BH',8,'dsasda','dsasda','dsasda','12:00:00','12:00:00','12:00:00','12:00:00'
+ print @a
+ 
+-----------------------------------4------------------------------------
+---------------------------Inserts the booking details in the database-------------
+ 
+ 
+alter PROCEDURE usp_Booking (@Car_Registration_Id VARCHAR(20),@Stoppage_Name VARCHAR(20),@Emp_Id int,@Status char(2),@Date_Start_Booking Date,@Date_End_Booking Date,@Booking_Id int output)
+AS
+BEGIN
+
+
+						declare @StatusBooking int
+							set @StatusBooking=1
+							set @Booking_Id=0
+											if not exists( SELECT * FROM tbl_booking WHERE Emp_Id=@Emp_Id and StatusBooking=1
+										 AND(
+										  (@Date_Start_Booking BETWEEN Date_Start_Booking and Date_End_Booking)
+									   OR (@Date_End_Booking BETWEEN Date_Start_Booking and Date_End_Booking)
+									   OR ((DATEDIFF(dd,@Date_Start_Booking,Date_Start_Booking)>=0)
+									   AND(DATEDIFF(dd,@Date_End_Booking,Date_End_Booking)<=0))) and Status=@Status  )
+					   
+	
+							begin
+		
+		
+		
+											if @Status='TO' or @Status='FO'
+		
+											begin
+		
+														if not exists( SELECT * FROM tbl_booking WHERE Emp_Id=@Emp_Id and StatusBooking=1
+												 AND(
+												  (@Date_Start_Booking BETWEEN Date_Start_Booking and Date_End_Booking)
+											   OR (@Date_End_Booking BETWEEN Date_Start_Booking and Date_End_Booking)
+											   OR ((DATEDIFF(dd,@Date_Start_Booking,Date_Start_Booking)>=0)
+											   AND(DATEDIFF(dd,@Date_End_Booking,Date_End_Booking)<=0))) and (Status='BH'  ))
+													begin
+		
+															
+															insert into tbl_Booking values(@Car_Registration_Id,@Stoppage_Name,@Emp_Id,@Status,@Date_Start_Booking,@Date_End_Booking,@StatusBooking)
+															select top 1 @Booking_Id =Booking_Id from tbl_Booking order by Booking_Id desc
+															set @StatusBooking=1
+													end
+		
+													else
+													begin
+													set @StatusBooking=1
+													end
+													
+		
+		
+												end
+		
+												else 
+		
+													begin
+		
+																if not exists( SELECT * FROM tbl_booking WHERE Emp_Id=@Emp_Id and StatusBooking=1
+														 AND(
+														  (@Date_Start_Booking BETWEEN Date_Start_Booking and Date_End_Booking)
+													   OR (@Date_End_Booking BETWEEN Date_Start_Booking and Date_End_Booking)
+													   OR ((DATEDIFF(dd,@Date_Start_Booking,Date_Start_Booking)>=0)
+													   AND(DATEDIFF(dd,@Date_End_Booking,Date_End_Booking)<=0))) and (Status='TO' or Status='FO' ) )
+														begin
+		
+
+																insert into tbl_Booking values(@Car_Registration_Id,@Stoppage_Name,@Emp_Id,@Status,@Date_Start_Booking,@Date_End_Booking,@StatusBooking)
+																select top 1 @Booking_Id =Booking_Id from tbl_Booking order by Booking_Id desc
+																set @StatusBooking=1
+														end
+																		else
+																		begin
+																		set @StatusBooking=1
+																		end
+		
+		
+		
+		
+														end
+														return 1
+														end
+		
+		
+		
+		else
+		begin
+		return 0
+		end
+		
+		
+		
+
+
+
+	
+END
+GO
+--------------------------------------------5----------------------------------------------------------------------------------Checks whether the car is already registered------------ 
+alter PROCEDURE usp_CheckPoolValidity (@Car_Registration_Id VARCHAR(20))
+AS
+BEGIN
+declare @todaydate  date
+select @todaydate=GETDATE()
+
+
+		
+		IF exists(SELECT Car_Registration_Id FROM tbl_Wheels WHERE Car_Registration_Id=@Car_Registration_Id AND Date_End_Pool>=@todaydate And Date_Start_Pool<=@todaydate and Available_seats>0)
+		begin
+		RETURN 1
+		end
+		else
+		begin
+		RETURN 0
+		end
+
+	
+END
+GO
+ 
+  declare @a int 
+ exec @a=usp_CheckPoolValidity  '123'
+ print @a
+
+
+ ----------------------------------------6----------------------------------------------
+ -----------------------------Update the details of user in the database--------------------
+ 
+create PROCEDURE usp_UpdateProfile (@Emp_Id VARCHAR(20),@Password VARCHAR(20),@ContactNo bigInt,@Status char (2))
+AS
+	BEGIN
+	BEGIN TRY
+	update tbl_Registration set Password=@Password,ContactNo=@ContactNo,Status=@Status where Emp_Id=@Emp_Id
+	
+	RETURN 1
+		
+END TRY
+
+BEGIN CATCH
+
+			RETURN 0
+END CATCH
+	end
+	
+ declare @a int 
+  exec @a=usp_UpdateProfile  '402318','Sumit',973999,'LP'
+  print @a
+ 	
+-----------------------------------------7---------------------------------------------
+--------------------------Update the details of Car in the database.-------------------
+
+create PROCEDURE usp_UpdateCarDetails(@Car_Registration_Id VARCHAR(20),@Date_Start_Pool datetime,@Date_End_Pool datetime,@Status char(2),@Stopage1_Name VARCHAR(20),@Stopage2_Name VARCHAR(20), @Stopage3_Name VARCHAR(20), @Morning_Arrival_Time1 datetime, @Morning_Arrival_Time2 datetime,
+  @Morning_Arrival_Time3 datetime, @Departure_Time datetime)
+AS
+	BEGIN
+	BEGIN TRY
+	update tbl_Wheels set Date_Start_Pool=@Date_Start_Pool,Date_End_Pool=@Date_End_Pool,Status=@Status where Car_Registration_Id =@Car_Registration_Id 
+	update tbl_Timing set Stopage1_Name=@Stopage1_Name,Stopage2_Name=@Stopage2_Name,Stopage3_Name =@Stopage3_Name,Morning_Arrival_Time1=@Morning_Arrival_Time1,Morning_Arrival_Time2=@Morning_Arrival_Time2,Morning_Arrival_Time3=@Morning_Arrival_Time3,Departure_Time=@Departure_Time where Car_Registration_Id =@Car_Registration_Id 
+	RETURN 1
+		
+END TRY
+
+BEGIN CATCH
+
+			RETURN 0
+END CATCH
+	end
+	
+ declare @a int 
+  exec @a=usp_UpdateCarDetails   'PBO8-AH-58','5-april-2009','22-APR-2010','BH','dsasda','dsasda','dsasda','13:00:00','12:00:00','12:00:00','12:00:00'
+  print @a
+  
+  
+
+
+
+---------------------------------------------8----------------------------------------------
+--------------------------------------Show the User Details.--------------------------------
+ 
+ 
+alter PROCEDURE usp_ShowProfiles(@Emp_Id VARCHAR(20),@Password VARCHAR(20) output,@ContactNo bigInt output,@Status char (2)output)
+AS
+	BEGIN
+	BEGIN TRY
+	
+	select @Password=Password from tbl_Registration  where Emp_Id=@Emp_Id 
+	select @ContactNo=ContactNo from tbl_Registration  where Emp_Id=@Emp_Id 
+	select @Status=Status from tbl_Registration  where Emp_Id=@Emp_Id 
+
+	RETURN 1
+		
+END TRY
+
+BEGIN CATCH
+
+			RETURN 0
+END CATCH
+	end
+declare @Password varchar(20)
+ declare @ContactNo bigint
+ declare @Status  char(2) 
+  exec usp_ShowProfiles '402318',@Password output, @ContactNo output, @Status output
+ 
+  print @Password
+  print @Status
+  print @ContactNo
+  
+  
+  
+  
+---------------------------------------------9--------------------------------------------
+--------------------This trigger decrease the No. of Available seats in tbl_Locations ----------------
+
+alter TRIGGER tr_Avilabilitycount ON tbl_Booking
+FOR INSERT
+AS
+BEGIN 
+declare @Car_Registration_Id varchar(20)
+SELECT @Car_Registration_Id=Car_Registration_Id FROM INSERTED
+update tbl_Wheels set Available_seats=Available_seats-1 where Car_Registration_Id=@Car_Registration_Id
+update tbl_QuickPool set Available_seats=Available_seats-1 where Car_Registration_Id=@Car_Registration_Id
+END  
+
+
+
+
+
+
+
+------------------------------------------10-----------------------------------------------
+----------------------------Calcultes the fare for particular user-------------------------
+alter PROCEDURE usp_CalFare(@Location varchar(20) , @Status char(2), @Days_of_Booking int,@fare float output)
+AS
+	BEGIN
+	declare @fare1 float
+	select  @fare1=Fare from tbl_Location where Location=@Location
+	
+	set @fare=@fare1*@Days_of_Booking
+	if (@Status='BH' )
+	BEGIN
+	set @fare=@Fare*2
+	end
+	
+	
+end
+
+declare @fare  int 
+exec usp_CalFare 'ooti','BH',20,@fare output
+Print @fare
+
+------------------------------------------11-----------------------------------------------
+----------------------------This trigger Inserts a record in tbl_FareDetails ---------------
+
+create trigger tr_InsertReport on tbl_Booking 
+for insert 
+as
+begin
+declare @Emp_Id int
+declare @Stoppage_Name varchar(20)
+declare @Status char(2)
+declare @datestart datetime
+declare @dateEnd  datetime
+declare @DaysofBooking int
+declare @Fare Float
+declare @Booking_Id int
+
+
+seLECT  @Emp_Id =  Emp_Id from inserted
+seLECT @Stoppage_Name = Stoppage_Name from inserted
+seLECT @Status = Status from inserted
+seLECT @datestart =date_start_bOOKING from inserted
+seLECT @dateEnd =date_End_bOOKING from inserted
+seLECT @DaysofBooking = datediff(dd,@datestart,@dateEnd)
+If @DaysofBooking=0
+begin
+set @DaysofBooking=1 
+end
+select top 1 @Booking_Id =Booking_Id from tbl_Booking order by Booking_Id desc
+
+print @DaysofBooking
+exec usp_CalFare  @Stoppage_Name,@Status,@DaysofBooking,@Fare output
+print @Fare
+insert into tbl_FareDetails values
+(
+@Booking_Id,
+@Emp_Id,
+@Stoppage_Name,
+@Status,
+@Fare,
+@DaysofBooking
+
+)
+
+end
+
+
+insert into tbl_Booking  values('PBO8-AH-56','ooti',402318,'BH','20-jan-2010','20-feb-2010')
+
+
+
+
+
+------------------------------------------12-----------------------------------------------
+----------------------------This procedure populate the grid on Quick Pool Page ---------------
+
+
+
+alter PROC usp_showcar
+(
+@Location varchar(20),@Status int output
+)
+as
+begin
+declare @NumberOfcar int
+declare @Count int 
+declare @Count2 int 
+declare @value int 
+declare @carid varchar(20)
+declare @stopagename varchar(20)
+
+set @status=0
+
+
+declare @temp table
+(
+rowid int identity(1,1),
+carno1 varchar(20),
+stopage1 varchar(20)
+
+)
+declare @finaltemp table
+(
+Car_Registration_No varchar(20),
+Stopage_Name varchar(20)
+)
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE1_NAME FROM tbl_Timing 
+WHERE STOPAGE1_NAME=@Location AND status2=1
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE2_NAME FROM tbl_Timing 
+WHERE STOPAGE2_NAME=@Location AND status2=1
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE3_NAME FROM tbl_Timing 
+WHERE STOPAGE3_NAME=@Location AND status2=1
+
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE1_NAME FROM tbl_QuickPool
+WHERE STOPAGE1_NAME=@Location AND Status=0
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE2_NAME FROM tbl_QuickPool
+WHERE STOPAGE2_NAME=@Location AND Status=0
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE3_NAME FROM tbl_QuickPool
+WHERE STOPAGE3_NAME=@Location AND Status=0
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,new_stoppage FROM tbl_QuickPool
+WHERE new_stoppage=@Location AND Status=0
+
+
+
+SELECT @NumberOfcar = COUNT(*) FROM  @temp
+set @Count=0
+
+WHILE @Count <= @NumberOfcar
+BEGIN
+SELECT @carid=carno1 FROM @temp WHERE rowid = @Count
+
+  
+ exec @value =usp_CheckPoolValidity  @carid
+ if @value=1
+ begin 
+ SELECT @stopagename=stopage1 from @temp WHERE rowid = @Count
+ 
+INSERT INTO @finaltemp
+SELECT @carid,@stopagename
+end
+
+SET @Count = @Count + 1
+END
+select @count2=count(*) from @finaltemp
+if (@count2=0)
+begin
+
+set @status=1
+end
+
+
+ select * from @finaltemp
+
+RETURN @status
+
+end
+
+
+
+
+
+
+
+declare @status int
+exec usp_showcar 'mysore',@status out 
+print @status
+
+
+
+
+------------------------------------------13-----------------------------------------------
+----------------------------This procedure populate the grid on Find A Trip Page---------------
+alter PROC usp_showtrip
+(
+@Location varchar(20),@Status char(2),@DateStartBooking Datetime,@DateEndBooking Datetime,@Status2 int output
+)
+as
+begin
+declare @NumberOfcar int
+declare @Count int 
+declare @value int 
+declare @carid varchar(20)
+declare @stopagename varchar(20)
+declare @morningtime3 time
+declare @Status1 char(2) 
+
+declare @temp table
+(
+rowid int identity(1,1),
+carno1 varchar(20),
+stopage1 varchar(20),
+morningtime1 time,
+Status1 char(2)
+)
+declare @finaltemp table
+(
+Car_Registration_No varchar(20),
+Stopage_Name varchar(20),
+Arrival_Time time,
+Status2 char(2)
+)
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE1_NAME,MORNING_ARRIVAL_TIME1,Status FROM tbl_Timing 
+WHERE STOPAGE1_NAME=@Location 
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE2_NAME,MORNING_ARRIVAL_TIME2,Status FROM tbl_Timing 
+WHERE STOPAGE2_NAME=@Location
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE3_NAME,MORNING_ARRIVAL_TIME3,Status FROM tbl_Timing 
+WHERE STOPAGE3_NAME=@Location
+
+SELECT @NumberOfcar = COUNT(*) FROM  @temp
+set @Count=0
+
+WHILE @Count <= @NumberOfcar
+BEGIN
+SELECT @carid=carno1 FROM @temp WHERE rowid = @Count
+
+  
+  exec @value =usp_CheckFindTripValidity  @carid,@DateStartBooking, @DateEndBooking
+ if @value=1
+ begin 
+ SELECT @stopagename=stopage1 from @temp WHERE rowid = @Count
+ SELECT @morningtime3=morningtime1 FROM @temp WHERE rowid = @Count
+ SELECT  @Status1=Status1 FROM @temp WHERE rowid = @Count
+ 
+INSERT INTO @finaltemp
+SELECT @carid,@stopagename,@morningtime3,@Status1
+end
+SET @Count = @Count + 1
+END
+select @count2=count(*) from @finaltemp
+if (@count2=0)
+begin
+
+set @status2=1
+end
+if @Status='TO'
+begin
+ select * from @finaltemp WHERE @Status='TO' or @Status='BH'
+end
+else if @Status='FO'
+begin
+ select * from @finaltemp WHERE @Status='FO' or @Status='BH'
+ end
+ 
+ else
+ begin
+ select * from @finaltemp WHERE @Status='BH'
+ end
+ 
+
+end
+
+
+
+
+
+
+--------------------------------------------------14-------------------------------------------
+-------------------------------------SHOW MY WHEELS--------------------------------------------
+alter PROC usp_showmywheels
+(
+@Emp_Id int,@status int out
+)
+as
+set @status=1
+begin
+if exists(select * from tbl_Wheels WHERE Emp_Id=@Emp_Id)
+begin
+
+set @status=0
+end
+select Car_Registration_Id,Car_Name,Date_Start_Pool,Date_End_Pool,Available_seats from tbl_Wheels WHERE Emp_Id=@Emp_Id
+return @status
+
+end
+
+--------------------------------------------------15---------------------------------------------
+-----------------------------------Check Pool Find Trip-----------------------------------------
+alter PROCEDURE usp_CheckFindTripValidity (@Car_Registration_Id VARCHAR(20),@Date_Start_Pool datetime,@Date_End_Pool datetime)
+AS
+BEGIN
+
+
+
+
+		
+		IF exists(SELECT Car_Registration_Id FROM tbl_Wheels WHERE Car_Registration_Id=@Car_Registration_Id AND Date_End_Pool>=@Date_End_Pool And Date_Start_Pool<=@Date_Start_Pool and Date_Start_Pool<=@Date_Start_Pool and Date_End_Pool>=@Date_End_Pool and Available_seats>0)
+		begin
+		RETURN 1
+		end
+		else
+		begin
+		RETURN 0
+		end
+
+	
+END
+GO
+
+
+
+
+
+--------------------------------------------------16---------------------------------------------
+-----------------------------------Update The Status of User-----------------------------------------
+
+
+create PROCEDURE usp_UpdateStatus (@Emp_Id VARCHAR(20),@Status char (2))
+AS
+	BEGIN
+	BEGIN TRY
+	update tbl_Registration set Status=@Status where Emp_Id=@Emp_Id
+	
+	RETURN 1
+		
+END TRY
+
+BEGIN CATCH
+
+			RETURN 0
+END CATCH
+	end
+	
+ declare @a int 
+  exec @a=usp_UpdateStatus '402318','LP'
+  print @a
+
+
+
+--------------------------------------------------17---------------------------------------------
+-----------------------------------Get the security Question-----------------------------------------
+
+
+alter PROCEDURE usp_GetSecurityQues (@Emp_Id VARCHAR(20),@Security_Ques varchar (200) output)
+
+AS
+BEGIN
+		
+		IF exists(SELECT Security_Ques FROM tbl_Registration WHERE Emp_Id=@Emp_Id )
+		begin
+		SELECT @Security_Ques=Security_Ques FROM tbl_Registration WHERE Emp_Id=@Emp_Id 
+		Print @Security_Ques
+		RETURN 1
+		end
+		else
+		begin
+		RETURN 0
+		end
+
+	
+END
+GO
+declare @a int 
+declare @st varchar(200)
+  exec @a=usp_GetSecurityQues  402318,@st out
+  print @a
+  Print @st
+
+
+
+
+--------------------------------------------------18---------------------------------------------
+-----------------------------------Check the security Ans-----------------------------------------
+
+
+create PROCEDURE usp_GetSecurityAns (@Emp_Id VARCHAR(20),@Security_Ans varchar (200))
+
+AS
+BEGIN
+		
+		IF exists(SELECT * FROM tbl_Registration WHERE Emp_Id=@Emp_Id and Security_Ans=@Security_Ans )
+		begin		
+		RETURN 1
+		end
+		else
+		begin
+		RETURN 0
+		end
+
+	
+END
+GO
+
+
+
+--------------------------------------------------19---------------------------------------------
+-----------------------------------Update Availability Seats-----------------------------------------
+
+
+alter PROCEDURE usp_UpdateAvailableSeats 
+
+AS
+BEGIN
+
+declare @NumberOfcar int
+declare @carid varchar(20)
+declare @Count int 
+declare @date date
+
+declare @temp table
+(
+rowid int identity(1,1),
+carId varchar(20),
+Status int
+)
+
+select @date=(select GETDATE()-1)
+
+
+INSERT INTO @temp
+SELECT Car_Registration_Id,StatusBooking FROM tbl_Booking 
+WHERE Date_End_Booking =@date  and  StatusBooking=1
+
+Update tbl_Booking set StatusBooking=0 WHERE Date_End_Booking =@date  and StatusBooking=1
+
+SELECT @NumberOfcar = COUNT(*) FROM  @temp
+set @Count=0
+
+WHILE @Count <= @NumberOfcar
+BEGIN
+SELECT @carid=carId FROM @temp WHERE rowid = @Count
+update tbl_Wheels Set Available_seats=Available_seats+1 where Car_Registration_Id=@carid
+
+
+  
+SET @Count = @Count + 1
+END
+end
+
+
+--------------------------------------------------20---------------------------------------------
+-----------------------------------Update Last Update Status-----------------------------------------
+
+
+alter PROCEDURE usp_UpdateQuickpool
+
+AS
+BEGIN
+ declare @NumberOfcar int
+declare @date date
+declare @carid varchar(20)
+declare @Count int
+declare @STOPAGE1_NAME varchar(20)
+declare @STOPAGE2_NAME varchar(20)
+declare @STOPAGE3_NAME varchar(20)
+
+select @date=(select GETDATE()-1)
+
+declare @temp table
+(
+rowid int identity(1,1),
+carno1 varchar(20)
+
+)
+
+INSERT INTO @temp select CAR_REGISTRATION_ID from tbl_QuickPool WHERE LastUpdate =@date  and Status=0
+
+SELECT @NumberOfcar = COUNT(*) FROM  @temp
+set @Count=1
+
+WHILE @Count <= @NumberOfcar
+BEGIN
+select @carid=carno1 from @temp WHERE rowid = @Count
+select @STOPAGE1_NAME=STOPAGE1_NAME,@STOPAGE2_NAME=STOPAGE2_NAME,@STOPAGE3_NAME=STOPAGE3_NAME from tbl_Timing WHERE CAR_REGISTRATION_ID=@carid
+Update tbl_QuickPool set Status=1,STOPAGE1_NAME=@STOPAGE1_NAME,STOPAGE2_NAME=@STOPAGE2_NAME,STOPAGE3_NAME=@STOPAGE3_NAME,new_stoppage='nostoppage'  WHERE CAR_REGISTRATION_ID=@carid
+Update tbl_Timing  set Status2=1 WHERE CAR_REGISTRATION_ID=@carid
+SET @Count = @Count + 1
+end
+end
+
+
+
+exec usp_UpdateQuickpool
+
+
+
+
+
+
+------------------------------------------------21-----------------------------------
+
+----------------------------------------Show Grid view on Home page-----------------------------------
+alter PROC usp_ShowFrontQuick
+(
+@Status int output
+)
+as
+begin
+declare @NumberOfcar int
+declare @Count int 
+declare @Count2 int 
+declare @value int 
+declare @carid varchar(20)
+declare @stopagename varchar(20)
+
+set @status=0
+
+
+declare @temp table
+(
+rowid int identity(1,1),
+carno1 varchar(20),
+stopage1 varchar(20)
+
+)
+declare @finaltemp table
+(
+Car_Number varchar(20),
+Stopage_Name varchar(20)
+)
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE1_NAME FROM tbl_Timing 
+WHERE status2=1 
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE2_NAME FROM tbl_Timing 
+WHERE status2=1 and STOPAGE2_NAME!='--Select--'
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE3_NAME FROM tbl_Timing 
+WHERE status2=1 and STOPAGE3_NAME!='-Select--'
+
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE1_NAME FROM tbl_QuickPool
+WHERE Status=0
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE2_NAME FROM tbl_QuickPool
+WHERE Status=0 and STOPAGE2_NAME!='--Select--'
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE3_NAME FROM tbl_QuickPool
+WHERE Status=0 and STOPAGE3_NAME!='-Select--'
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,new_stoppage FROM tbl_QuickPool
+WHERE Status=0 and new_stoppage!=null
+
+
+
+SELECT @NumberOfcar = COUNT(*) FROM  @temp
+set @Count=0
+
+WHILE @Count <= @NumberOfcar
+BEGIN
+SELECT @carid=carno1 FROM @temp WHERE rowid = @Count
+
+  
+ exec @value =usp_CheckPoolValidity  @carid
+ if @value=1
+ begin 
+ SELECT @stopagename=stopage1 from @temp WHERE rowid = @Count
+ 
+INSERT INTO @finaltemp
+SELECT @carid,@stopagename
+end
+
+SET @Count = @Count + 1
+END
+select @count2=count(*) from @finaltemp
+if (@count2=0)
+begin
+
+set @status=1
+end
+
+
+ select * from @finaltemp
+
+RETURN @status
+
+end
+
+
+
+
+--------------------------------------------------22---------------------------------------------
+-----------------------------------Update Last Update Status-----------------------------------------
+
+alter PROCEDURE usp_QuickPoolValidity (@status int output)
+AS
+BEGIN
+
+declare @todaydate  date
+select @todaydate=GETDATE()
+
+
+		
+		IF exists(SELECT Car_Registration_Id FROM tbl_Wheels WHERE Date_End_Pool>=@todaydate And Date_Start_Pool<=@todaydate and Available_seats>0)
+		begin
+		
+		set @status=1
+		end
+		else
+		begin
+		set @status=0
+		end
+
+	
+END
+GO
+
+
+update tbl_wheels set Available_seats=5 where Car_Name='Indica'
+
+update tbl_Booking set StatusBooking=1 where Booking_Id=1001
+
+exec usp_UpdateAvailableSeats 
+
+
+
+--------------------------------------------------23------------------------------------------------------------------
+--------------------------------------Procedure to check booking for particular car---------------------------------
+--------------------------------------------------------------------------------------------------------------------
+
+create proc usp_CheckBooking(@CarRegistrationId Varchar(20),@Count1 int output,@Count2 int output,@Count3 int output)
+as 
+begin
+declare @stoppage1 varchar(20)
+declare @stoppage2 varchar(20)
+declare @stoppage3 varchar(20)
+
+set @Count1=0
+set @Count2=0
+set @Count3=0
+
+SELECT @stoppage1=STOPAGE1_NAME FROM tbl_timing where
+CAR_REGISTRATION_ID=@CarRegistrationId
+
+
+SELECT @stoppage2=STOPAGE2_NAME FROM tbl_timing where
+CAR_REGISTRATION_ID=@CarRegistrationId
+
+
+SELECT @stoppage3=STOPAGE3_NAME FROM tbl_timing where
+CAR_REGISTRATION_ID=@CarRegistrationId
+
+
+if exists(select * from tbl_Booking where CAR_REGISTRATION_ID=@CarRegistrationId and  Stoppage_Name=@stoppage1 and StatusBooking=1)
+begin
+set @Count1=1
+end
+
+if exists(select * from tbl_Booking where CAR_REGISTRATION_ID=@CarRegistrationId and  Stoppage_Name=@stoppage2 and StatusBooking=1)
+begin
+set @Count2=1
+end
+
+if exists(select * from tbl_Booking where CAR_REGISTRATION_ID=@CarRegistrationId and  Stoppage_Name=@stoppage3 and StatusBooking=1)
+begin
+set @Count3=1
+end
+
+end
+
+------------------------------------------------------------24-------------------------------------------
+----------------------------------------------Count Stoppage on Quick Pool-----------------------------------------------------------
+alter proc usp_CountStoppages(@CarRegistrationId Varchar(20),@Count int output)
+as 
+begin
+
+
+declare @temp table
+(
+stopage varchar(20)
+
+)
+
+
+INSERT INTO @temp
+SELECT STOPAGE2_NAME FROM tbl_QuickPool
+WHERE  STOPAGE2_NAME!='--Select--' and CAR_REGISTRATION_ID=@CarRegistrationId
+
+INSERT INTO @temp
+SELECT STOPAGE3_NAME FROM tbl_QuickPool 
+WHERE  STOPAGE3_NAME!='-Select--' and CAR_REGISTRATION_ID=@CarRegistrationId
+
+INSERT INTO @temp
+SELECT new_stoppage FROM tbl_QuickPool 
+WHERE  new_stoppage!='no stoppage' and CAR_REGISTRATION_ID=@CarRegistrationId
+
+set @Count=(select Count(*) from @temp)
+end
+
+
+
+
+----------------------------------------------------------25----------------------------------------------------------
+--------------------------------------Procedure to check booking for particular car---------------------------------
+--------------------------------------------------------------------------------------------------------------------
+
+create proc usp_CheckBooking(@CarRegistrationId Varchar(20),@Count1 int output,@Count2 int output,@Count3 int output)
+as 
+begin
+declare @stoppage1 varchar(20)
+declare @stoppage2 varchar(20)
+declare @stoppage3 varchar(20)
+
+set @Count1=0
+set @Count2=0
+set @Count3=0
+
+SELECT @stoppage1=STOPAGE1_NAME FROM tbl_timing where
+CAR_REGISTRATION_ID=@CarRegistrationId
+
+
+SELECT @stoppage2=STOPAGE2_NAME FROM tbl_timing where
+CAR_REGISTRATION_ID=@CarRegistrationId
+
+
+SELECT @stoppage3=STOPAGE3_NAME FROM tbl_timing where
+CAR_REGISTRATION_ID=@CarRegistrationId
+
+
+if exists(select * from tbl_Booking where CAR_REGISTRATION_ID=@CarRegistrationId and  Stoppage_Name=@stoppage1 and StatusBooking=1)
+begin
+set @Count1=1
+end
+
+if exists(select * from tbl_Booking where CAR_REGISTRATION_ID=@CarRegistrationId and  Stoppage_Name=@stoppage2 and StatusBooking=1)
+begin
+set @Count2=1
+end
+
+if exists(select * from tbl_Booking where CAR_REGISTRATION_ID=@CarRegistrationId and  Stoppage_Name=@stoppage3 and StatusBooking=1)
+begin
+set @Count3=1
+end
+
+end
+---------------------------------------------------------------26--------------------------------------------------------------
+---------------------------------------Procedure to check repetition of stoppages--------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------
+alter proc usp_CheckRepetition(@CarRegistrationId varchar(20),@Location varchar(20),@Rep int output)
+as 
+begin
+
+set @Rep=0
+if exists(select * from tbl_QuickPool where Car_Registration_Id=@CarRegistrationId and (Stopage1_Name=@Location or Stopage2_Name=@Location or Stopage3_Name=@Location or new_stoppage=@Location))
+begin
+set @Rep=1
+end
+end
+
+
+-------------------------------------------------------------27----------------------------------------------------------------
+---------------------------------------Show Car Details--------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------
+
+alter proc usp_ShowCarDetails
+(@Car_Registration_Id varchar(20),@Car_Name Varchar(20) output, @Seats int output,@Available_seats int output,@Date_Start_Pool Date output,@Date_End_Pool Date output,@Status char(2) output,@Stopage1_Name Varchar(20) output,@Stopage2_Name Varchar(20) output,@Stopage3_Name Varchar(20) output,@Morning_Arrival_Time1 time output,@Morning_Arrival_Time2 time output,@Morning_Arrival_Time3 time output,@Departure_Time time output)
+as
+begin
+select @Car_Name=Car_Name,@Seats=Seats,@Available_seats=Available_seats,@Date_Start_Pool=Date_Start_Pool,@Date_End_Pool=Date_End_Pool,@Status=Status from tbl_Wheels where Car_Registration_Id=@Car_Registration_Id
+select @Stopage1_Name=Stopage1_Name,@Stopage2_Name =Stopage2_Name,@Stopage3_Name =Stopage3_Name ,@Morning_Arrival_Time1=Morning_Arrival_Time1,@Morning_Arrival_Time2=Morning_Arrival_Time2,@Morning_Arrival_Time3=Morning_Arrival_Time3,@Departure_Time=Departure_Time from tbl_Timing where Car_Registration_Id=@Car_Registration_Id
+end
+
+
+
+
+------------------------------------------------------------28-----------------------------------------------------------------
+---------------------------------------Update Car Details--------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------
+
+
+alter PROCEDURE usp_UpdateCar
+ (@Car_Registration_Id VARCHAR(20),@Date_Start_Pool date,@Date_End_Pool date,@Status char(2), @Stopage1_Name VARCHAR(20),@Stopage2_Name VARCHAR(20), @Stopage3_Name VARCHAR(20), @Morning_Arrival_Time1 time, @Morning_Arrival_Time2 time,
+  @Morning_Arrival_Time3 time, @Departure_Time time)
+
+	AS
+	BEGIN
+	update tbl_Wheels set Date_Start_Pool=@Date_Start_Pool,Date_End_Pool=@Date_End_Pool,Status=@Status where Car_Registration_Id=@Car_Registration_Id
+	update tbl_Timing set Stopage1_Name=@Stopage1_Name,Stopage2_Name=@Stopage2_Name,Stopage3_Name=@Stopage3_Name,Morning_Arrival_Time1=@Morning_Arrival_Time1,Morning_Arrival_Time2=@Morning_Arrival_Time2,Morning_Arrival_Time3=@Morning_Arrival_Time3,Departure_Time=@Departure_Time where Car_Registration_Id=@Car_Registration_Id
+
+	update tbl_QuickPool set Date_Start_Pool=@Date_Start_Pool,Date_End_Pool=@Date_End_Pool,Stopage1_Name=@Stopage1_Name,Stopage2_Name=@Stopage2_Name,Stopage3_Name=@Stopage3_Name,Morning_Arrival_Time1=@Morning_Arrival_Time1,Morning_Arrival_Time2=@Morning_Arrival_Time2,Morning_Arrival_Time3=@Morning_Arrival_Time3,Departure_Time=@Departure_Time where Car_Registration_Id=@Car_Registration_Id
+	
+end
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------29-----------------------------------------------------------------
+---------------------------------------Show all Trip on Find A trip Page--------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------
+
+
+alter PROC usp_alltrip
+(
+@Status char(2),@DateStartBooking Datetime,@DateEndBooking Datetime,@Status2 int output
+)
+as
+begin
+declare @NumberOfcar int
+declare @Count int 
+declare @Count2 int 
+declare @value int 
+declare @carid varchar(20)
+declare @stopagename varchar(20)
+declare @morningtime3 time
+declare @Status1 char(2) 
+set @Status2=0
+declare @temp table
+(
+rowid int identity(1,1),
+carno1 varchar(20),
+stopage1 varchar(20),
+morningtime1 time,
+Status1 char(2)
+)
+declare @finaltemp table
+(
+Car_Registration_No varchar(20),
+Stopage_Name varchar(20),
+Arrival_Time time,
+Status2 char(2)
+)
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE1_NAME,MORNING_ARRIVAL_TIME1,Status FROM tbl_Timing 
+ 
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE2_NAME,MORNING_ARRIVAL_TIME2,Status FROM tbl_Timing 
+where STOPAGE2_NAME!='--Select--'
+
+
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE3_NAME,MORNING_ARRIVAL_TIME3,Status FROM tbl_Timing 
+where STOPAGE3_NAME!='-Select--'
+
+SELECT @NumberOfcar = COUNT(*) FROM  @temp
+set @Count=0
+
+WHILE @Count <= @NumberOfcar
+BEGIN
+SELECT @carid=carno1 FROM @temp WHERE rowid = @Count
+
+  
+  exec @value =usp_CheckFindTripValidity  @carid,@DateStartBooking, @DateEndBooking
+ if @value=1
+ begin 
+ SELECT @stopagename=stopage1 from @temp WHERE rowid = @Count
+ SELECT @morningtime3=morningtime1 FROM @temp WHERE rowid = @Count
+ SELECT  @Status1=Status1 FROM @temp WHERE rowid = @Count
+ 
+INSERT INTO @finaltemp
+SELECT @carid,@stopagename,@morningtime3,@Status1
+end
+SET @Count = @Count + 1
+END
+select @count2=count(*) from @finaltemp
+if (@count2=0)
+begin
+
+set @status2=1
+end
+if @Status='TO'
+begin
+ select * from @finaltemp WHERE @Status='TO' or @Status='BH'
+end
+else if @Status='FO'
+begin
+ select * from @finaltemp WHERE @Status='FO' or @Status='BH'
+ end
+ 
+ else
+ begin
+ select * from @finaltemp WHERE @Status='BH'
+ end
+ 
+
+end
+
+
+
+
+------------------------------------------------------------30-----------------------------------------------------------------
+---------------------------------------Show all Trip on Quick Pool Page--------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------
+
+alter PROC usp_showallcar
+(
+@Status int output
+)
+as
+begin
+declare @NumberOfcar int
+declare @Count int 
+declare @Count2 int 
+declare @value int 
+declare @carid varchar(20)
+declare @stopagename varchar(20)
+
+set @status=0
+
+
+declare @temp table
+(
+rowid int identity(1,1),
+carno1 varchar(20),
+stopage1 varchar(20)
+
+)
+declare @finaltemp table
+(
+Car_Registration_No varchar(20),
+Stopage_Name varchar(20)
+)
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE1_NAME FROM tbl_Timing 
+WHERE status2=1 
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE2_NAME FROM tbl_Timing 
+WHERE status2=1 and STOPAGE2_NAME!='--Select--'
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE3_NAME FROM tbl_Timing 
+WHERE status2=1 and STOPAGE3_NAME!='-Select--'
+
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE1_NAME FROM tbl_QuickPool
+WHERE Status=0
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE2_NAME FROM tbl_QuickPool
+WHERE Status=0 and STOPAGE2_NAME!='--Select--'
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,STOPAGE3_NAME FROM tbl_QuickPool
+WHERE Status=0 and STOPAGE3_NAME!='-Select--'
+
+
+INSERT INTO @temp
+SELECT CAR_REGISTRATION_ID,new_stoppage FROM tbl_QuickPool
+WHERE Status=0 and new_stoppage!='nostoppage'
+
+
+
+SELECT @NumberOfcar = COUNT(*) FROM  @temp
+set @Count=0
+
+WHILE @Count <= @NumberOfcar
+BEGIN
+SELECT @carid=carno1 FROM @temp WHERE rowid = @Count
+
+  
+ exec @value =usp_CheckPoolValidity  @carid
+ if @value=1
+ begin 
+ SELECT @stopagename=stopage1 from @temp WHERE rowid = @Count
+ 
+INSERT INTO @finaltemp
+SELECT @carid,@stopagename
+end
+
+SET @Count = @Count + 1
+END
+select @count2=count(*) from @finaltemp
+if (@count2=0)
+begin
+
+set @status=1
+end
+
+
+ select * from @finaltemp
+
+RETURN @status
+
+end
+--------------------------------------------------------------------------------------------------------
+alter PROCEDURE usp_GetBookings(@Car_Registration_Id varchar(20),@status int output)
+AS
+BEGIN
+
+
+
+		
+		IF exists(SELECT Stoppage_Name,Emp_Id,Booking_Id FROM tbl_Booking WHERE Car_Registration_Id =@Car_Registration_Id and StatusBooking=1)
+		begin
+		
+		set @status=1
+		end
+		else
+		begin
+		set @status=0
+		end
+		SELECT Stoppage_Name,Emp_Id,Booking_Id FROM tbl_Booking WHERE Car_Registration_Id =@Car_Registration_Id and StatusBooking=1
+	
+END
+GO
+
+-----------------------------------------------------------------------------
+alter PROCEDURE usp_ActiveBooking(@empid int,@status int output)
+AS
+BEGIN
+
+
+
+		
+		IF exists(SELECT * FROM tbl_Booking WHERE Emp_Id =@empid and StatusBooking=1)
+		begin
+		set @status=1
+		end
+		else
+		begin
+		set @status=0
+		end
+		SELECT Booking_Id ,Car_Registration_Id,Stoppage_Name,Date_Start_Booking,Date_End_Booking FROM tbl_Booking WHERE StatusBooking=1 and Emp_Id =@empid
+	
+END
+GO
